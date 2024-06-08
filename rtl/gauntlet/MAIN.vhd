@@ -180,6 +180,9 @@ architecture RTL of MAIN is
 	signal
 		slv_SBDI,
 		slv_14F,
+		slv_EEP_14A_V2,
+		slv_EEP_14A_G1,
+		slv_EEP_14A_G2,
 		slv_EEP_14A,
 		slv_11A_data,
 		slv_11B_data,
@@ -516,7 +519,7 @@ begin
 		I_SLAP_TYPE => I_SLAP_TYPE
 	);
 
-	p_EEP_14A	: entity work.EEP_14A
+	p_EEP_14A_G1	: entity work.EEP_14A_G1
 	port map (
 		CLK => I_XCKR,
 		WEn => sl_WLn,
@@ -524,9 +527,36 @@ begin
 		OEn => sl_EEP_OEn,
 		AD  => slv_cpu_ad( 9 downto 1),
 		DI  => slv_cpu_do( 7 downto 0),
-		DO  => slv_EEP_14A
+		DO  => slv_EEP_14A_G1
 	);
 
+	p_EEP_14A_G2	: entity work.EEP_14A_G2
+	port map (
+		CLK => I_XCKR,
+		WEn => sl_WLn,
+		CEn => sl_EEP_CEn,
+		OEn => sl_EEP_OEn,
+		AD  => slv_cpu_ad( 9 downto 1),
+		DI  => slv_cpu_do( 7 downto 0),
+		DO  => slv_EEP_14A_G2
+	);
+
+	p_EEP_14A_V2	: entity work.EEP_14A_V2
+	port map (
+		CLK => I_XCKR,
+		WEn => sl_WLn,
+		CEn => sl_EEP_CEn,
+		OEn => sl_EEP_OEn,
+		AD  => slv_cpu_ad( 9 downto 1),
+		DI  => slv_cpu_do( 7 downto 0),
+		DO  => slv_EEP_14A_V2
+	);
+
+	slv_EEP_14A <=
+		slv_EEP_14A_V2 when (I_SLAP_TYPE = 118) else
+		slv_EEP_14A_G2 when (I_SLAP_TYPE = 106) else
+		slv_EEP_14A_G1;
+		
 	-- address bus and enable for externally located program ROMs, special case for slapstic
 	O_MP_EN <=
 		not (sl_ASn or sl_ROM);
@@ -558,6 +588,7 @@ begin
 --	MBUS=0     R/W=1   /PL3=0   x8  data from 14C
 --	MBUS=0     R/W=1   /PL4=0   x8  data from 14E
 --	MBUS=0     R/W=1 /INPUT=0   x8  data from 14F
+
 
 	-- CPU input data bus mux
 	slv_cpu_di <=

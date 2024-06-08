@@ -2,7 +2,7 @@ library ieee;
 	use ieee.std_logic_1164.all;
 	use ieee.numeric_std.all;
 
-entity EEP_14A is
+entity EEP_14A_G1 is
 port (
 	CLK : in  std_logic;
 	WEn : in  std_logic;
@@ -15,7 +15,7 @@ port (
 end entity;
 
 -- EEPROM as RAM
-architecture RTL of EEP_14A is
+architecture RTL of EEP_14A_G1 is
 	type RAM_ARRAY is array (0 to 511) of std_logic_vector(7 downto 0);
 --	signal RAM : RAM_ARRAY:=(others=>(others=>'0'));
 	-- initialized EEPROM contents dumped from MAME
